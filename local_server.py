@@ -17,7 +17,7 @@ class LocalProcess(SingleCPUProcess):
         self.stdout.close()
 
     def clean(self):
-        os.unlink(logfile)
+        os.unlink(self.logfile)
 
 class LocalServer(SizelessServer):
     def __init__(self, cpus, roots):
