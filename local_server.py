@@ -20,8 +20,8 @@ class LocalProcess(SingleCPUProcess):
         os.unlink(self.logfile)
 
 class LocalServer(SizelessServer):
-    def __init__(self, cpus, roots):
-        super(LocalServer, self).__init__(cpus, roots)
+    def __init__(self, utup, cpus, roots):
+        super(LocalServer, self).__init__(utup, cpus, roots)
 
     def list_disk(self, root, path):
         for root, dirs, files in os.walk(self.fullpath(root, path)):
@@ -37,12 +37,12 @@ class LocalServer(SizelessServer):
         with open(self.fullpath(root, path), 'r') as fp:
             return fp.read()
 
-    def start_process(self, root, path, command, logfile):
+    def start_process(self, command, logfile, root=None, path=None):
         fp = open(logfile, 'w')
         proc = subprocess.Popen(shlex.split(command), cwd=self.fullpath(root, path), stdout=fp)
         return LocalProcess(proc, fp, logfile)
 
-    def run_command(self, root, path, command):
+    def run_command(self, command, root=None, path=None):
         proc = subprocess.Popen(shlex.split(command), cwd=self.fullpath(root, path), stdout=subprocess.PIPE)
         return proc.communicate()[0]
 
