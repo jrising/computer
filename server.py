@@ -10,12 +10,14 @@ class DiskServer(object):
         self.roots = roots
 
     def fullpath(self, root, path=None):
-        if root[0] == '/':
-            return root
+        if len(root) > 0 and root[0] == '/':
+            rootpath = root
+        else:
+            rootpath = self.roots[root]
         if path is None:
-            return self.roots[root]
+            return rootpath
 
-        return os.path.normpath(os.path.join(self.roots[root], path))
+        return os.path.normpath(os.path.join(rootpath, path))
 
 class SizelessServer(DiskServer):
     def __init__(self, utup, cpus, roots):

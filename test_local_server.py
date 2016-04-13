@@ -14,10 +14,10 @@ def test_io():
 def test_proc():
     server = LocalServer('localhost', 1, {'': '.'})
 
-    lines = server.run_command('',  '.', 'ls -1')
+    lines = server.run_command('ls -1', '',  '.')
     assert('test_local_server.py' in lines.split('\n'))
 
-    proc = server.start_process('', '.', 'ls -1', 'log.txt')
+    proc = server.start_process('ls -1', 'log.txt', '', '.')
     while proc.is_running():
         time.sleep(.1)
 
