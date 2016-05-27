@@ -1,5 +1,5 @@
 class SingleCPUProcess(object):
-    def __init__(self, server, logfile):
+    def __init__(self, server, logfile=None):
         self.server = server
         self.logfile = logfile
 

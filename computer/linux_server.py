@@ -8,7 +8,10 @@ class RemoteLinuxProcess(RemoteProcess):
 
     def is_running(self):
         "Returns bool."
-        return self.server.run_command("ps -l %d; echo $?" % (self.pid))[0].split('\n')[-1] == '0'
+        lines = self.server.run_command("ps -l %d; echo $?" % (self.pid))[0].split('\n')
+        if lines[-1] == '':
+            lines = lines[:-1]
+        return lines[-1] == '0'
 
     def kill(self):
         """
@@ -16,11 +19,20 @@ class RemoteLinuxProcess(RemoteProcess):
         """
         self.server.run_command("kill %d" % (self.pid))
 
+    def halt(self):
+        """Temporarily stop a process."""
+        self.server.run_command("kill -STOP %d" % (self.pid))
+
+    def resume(self):
+        """Resume a halted process."""
+        self.server.run_command("kill -CONT %d" % (self.pid))
+
     def clean(self):
         """
         Remove the log file
         """
-        self.server.run_command("rm %s" % (self.logfile))
+        if self.logfile is not None:
+            self.server.run_command("rm %s" % (self.logfile))
 
 class SizelessLinuxServer(SizelessConnectableServer):
     def __init__(self, utup, cpus, roots, credentials):

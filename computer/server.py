@@ -11,6 +11,9 @@ class DiskServer(object):
         self.baseroot = os.getcwd()
 
     def splitpath(self, path):
+        if path is None:
+            return None, None
+
         if len(path) > 0 and path[0] == '/':
             return None, path
         if '/' not in path:
@@ -19,6 +22,9 @@ class DiskServer(object):
         return path[:path.index('/')], path[path.index('/')+1:]
 
     def fullpath(self, path):
+        if path is None:
+            return None
+
         root, path = self.splitpath(path)
         if root is None:
             return path

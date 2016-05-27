@@ -1,4 +1,4 @@
-import os, subprocess, shlex
+import os, subprocess, shlex, signal
 from server import SizelessServer
 from process import SingleCPUProcess
 
@@ -16,8 +16,17 @@ class LocalProcess(SingleCPUProcess):
         self.proc.kill()
         self.stdout.close()
 
+    def halt(self):
+        """Temporarily stop a process."""
+        self.proc.signal(signal.SIGSTOP)
+
+    def resume(self):
+        """Resume a halted process."""
+        self.proc.signal(signal.SIGCONT)
+
     def clean(self):
-        os.unlink(self.server.fullpath(self.logfile))
+        if self.logfile is not None:
+            os.unlink(self.server.fullpath(self.logfile))
 
 class LocalServer(SizelessServer):
     def __init__(self, utup, cpus, roots):
@@ -44,6 +53,5 @@ class LocalServer(SizelessServer):
         return LocalProcess(self, proc, fp, logfile)
 
     def run_command(self, command, path=None):
-        proc = subprocess.Popen(shlex.split(command), cwd=self.fullpath(path), stdout=subprocess.PIPE)
-        return proc.communicate()[0]
+        return (os.popen(command).read(), "")
 
