@@ -33,7 +33,8 @@ class LocalServer(SizelessServer):
         super(LocalServer, self).__init__(utup, cpus, roots)
 
     def list_disk(self, path=None):
-        os.chdir(self.fullpath(path))
+        if path is not None:
+            os.chdir(self.fullpath(path))
         for root, dirs, files in os.walk('.'):
             for dir in dirs:
                 yield os.path.normpath(os.path.join(root, dir))
@@ -53,5 +54,7 @@ class LocalServer(SizelessServer):
         return LocalProcess(self, proc, fp, logfile)
 
     def run_command(self, command, path=None):
+        if path is not None:
+            os.chdir(self.fullpath(path))
         return (os.popen(command).read(), "")
 

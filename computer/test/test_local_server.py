@@ -18,7 +18,7 @@ def test_proc():
 
     server = LocalServer('localhost', 1, {'cc': '..'})
 
-    lines = server.run_command('ls -1', 'cc')
+    lines = server.run_command('ls -1', 'cc')[0]
     assert('local_server.py' in lines.split('\n'))
 
     proc = server.start_process('ls -1', 'cc/log.txt', 'cc')
