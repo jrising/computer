@@ -8,16 +8,24 @@ class DiskServer(object):
         """
         self.utup = utup
         self.roots = roots
+        self.baseroot = os.getcwd()
 
-    def fullpath(self, root, path=None):
-        if len(root) > 0 and root[0] == '/':
-            rootpath = root
-        else:
-            rootpath = self.roots[root]
+    def splitpath(self, path):
+        if len(path) > 0 and path[0] == '/':
+            return None, path
+        if '/' not in path:
+            return path, None
+
+        return path[:path.index('/')], path[path.index('/')+1:]
+
+    def fullpath(self, path):
+        root, path = self.splitpath(path)
+        if root is None:
+            return path
         if path is None:
-            return rootpath
+            return os.path.join(self.baseroot, self.roots[root])
 
-        return os.path.normpath(os.path.join(rootpath, path))
+        return os.path.normpath(os.path.join(self.baseroot, self.roots[root], path))
 
 class SizelessServer(DiskServer):
     def __init__(self, utup, cpus, roots):
@@ -29,50 +37,46 @@ class SizelessServer(DiskServer):
         super(SizelessServer, self).__init__(utup, roots)
         self.cpus = cpus
 
-    def push_disk(self, root, path, localds):
+    def push_disk(self, path, localds):
         """
-        root: name
         path: subdirectory
         local: local DiskServer
         """
         raise NotImplementedError()
 
-    def pull_disk(self, root, path, localds):
+    def pull_disk(self, path, localds):
         """
-        root: name
         path: subdirectory
         local: local DiskServer
         """
         raise NotImplementedError()
 
-    def list_disk(self, root, path):
+    def list_disk(self, path):
         """
-        root: name
         path: subdirectory
         """
         raise NotImplementedError()
 
-    def has_file(self, root, filepath):
+    def has_file(self, filepath):
         """
-        root: name
         path: subdirectory
         """
         basename = os.path.basename(filepath)
-        for filename in self.list_disk(root, os.path.dirname(filepath)):
+        for filename in self.list_disk(os.path.dirname(filepath)):
             if filename == basename:
                 return True
 
         return False
 
-    def read_file(self, root, filepath):
+    def read_file(self, filepath):
         "Returns string."
         raise NotImplementedError()
 
-    def start_process(self, command, root=None, path=None):
+    def start_process(self, command, path=None):
         "Returns process."
         raise NotImplementedError()
 
-    def run_command(self, command, root=None, path=None):
+    def run_command(self, command, path=None):
         "Returns (output, error) as strings."
         raise NotImplementedError()
 

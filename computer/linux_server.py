@@ -42,35 +42,22 @@ class SizelessLinuxServer(SizelessConnectableServer):
 
     # Basic operations
 
-    def list_disk(self, root, path):
+    def list_disk(self, path):
         """
-        root: name
         path: subdirectory
         """
         ansi_escape = re.compile(r'\x1b[^m]*m')
-        stdout, stderr = self.run_command("ls -1 " + self.fullpath(root, path))
+        stdout, stderr = self.run_command("ls -1 " + self.fullpath(path))
         for filename in stdout.split('\n'):
             yield ansi_escape.sub('', filename)
 
-    def has_file(self, root, filepath):
-        """
-        root: name
-        path: subdirectory
-        """
-        basename = os.path.basename(filepath)
-        for filename in self.list_disk(root, os.path.dirname(filepath)):
-            if filename == basename:
-                return True
-
-        return False
-
-    def read_file(self, root, filepath=None):
+    def read_file(self, filepath=None):
         "Returns string."
-        return self.run_command("cat " + self.fullpath(root, filepath) + "\n")[0]
+        return self.run_command("cat " + self.fullpath(filepath) + "\n")[0]
 
-    def start_process(self, command, root=None, path=None):
+    def start_process(self, command, path=None):
         logfile, stderr = self.run_command("mktemp")
-        self.run_command("nohup %s >& %s &" % (command, logfile), root, path)
+        self.run_command("nohup %s >& %s &" % (command, logfile), path)
 
         pid = int(self.run_command("echo $!")[0].split('\n')[0])
         return RemoteLinuxProcess(self, pid, logfile)
