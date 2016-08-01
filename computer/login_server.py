@@ -12,6 +12,8 @@ class LoginServer(ParamikoServer):
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(self.credentials['domain'], username=self.credentials['username'], password=self.credentials['password'])  # password=self.password)
+        # JK_Note: Changing password input method to allow automatic login.
+
         # Open up a session
         s = client.get_transport().open_session()
         paramiko.agent.AgentRequestHandler(s)
@@ -27,7 +29,11 @@ class LoginServer(ParamikoServer):
 
     def get_cpu_util(self):
         '''
-        implement the idea of getting cpu_percents in psutil
+        implement the idea of getting cpu_percents in psutil:
+        1. Get "cpu times" from /proc/stat once and wait a second before getting another reading of those.
+        2. Compare the two readings and define the utilization rate as:
+           (Non-idle and Non-iowait CPU time) / (total CPU time)
+
         http://stackoverflow.com/questions/23367857/accurate-calculation-of-cpu-usage-given-in-percentage-in-linux
         '''
         prev_time = [x for x in self.run_command('head -' + str(self.cpus+1) + ' /proc/stat')[0].split('\n')][1:]
@@ -39,6 +45,5 @@ class LoginServer(ParamikoServer):
             post_sum = sum([int(x) for x in post_time[i].split()[1:]])
             prev_busy = prev_sum - int(prev_time[i].split()[4]) - int(prev_time[i].split()[5])
             post_busy = post_sum - int(post_time[i].split()[4]) - int(post_time[i].split()[5])
-
             ret.append((prev_time[i].split()[0], float(post_busy - prev_busy)/(post_sum - prev_sum)*100))
         return ret
