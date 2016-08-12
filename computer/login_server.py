@@ -13,7 +13,6 @@ class LoginServer(ParamikoServer):
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(self.credentials['domain'], username=self.credentials['username'], password=self.credentials['password'])
-        # JK_Note: Changing password input method to allow automatic login.
 
         # Open up a session
         s = client.get_transport().open_session()
