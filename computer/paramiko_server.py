@@ -1,6 +1,7 @@
 import sys, time
 import paramiko
-from lib.linux_server import SizelessLinuxServer
+from linux_server import SizelessLinuxServer
+
 
 class ParamikoServer(SizelessLinuxServer):
     def receive(self):

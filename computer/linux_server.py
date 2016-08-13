@@ -69,8 +69,7 @@ class SizelessLinuxServer(SizelessConnectableServer):
 
     def start_process(self, command, path=None):
         logfile, stderr = self.run_command("mktemp")
-        self.run_command("nohup %s >& %s &" % (command, logfile), path)
-
+        self.run_command("nohup %s > %s 2>&1 &" % (command, logfile), path)
         pid = int(self.run_command("echo $!")[0].split('\n')[0])
         return RemoteLinuxProcess(self, pid, logfile)
 
