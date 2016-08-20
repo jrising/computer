@@ -29,8 +29,8 @@ class LocalProcess(SingleCPUProcess):
             os.unlink(self.server.fullpath(self.logfile))
 
 class LocalServer(SizelessServer):
-    def __init__(self, cpus, roots):
-        super(LocalServer, self).__init__((), cpus, roots)
+    def __init__(self, utup, cpus, roots):
+        super(LocalServer, self).__init__(utup, cpus, roots)
 
     def list_disk(self, path=None):
         if path is not None:
