@@ -86,6 +86,10 @@ class SizelessServer(DiskServer):
         "Returns (output, error) as strings."
         raise NotImplementedError()
 
+    def run_interactive(self, command, path=None):
+        "Runs an interactive command and returns streams (stdin, stdout, stderr) to interact with it."
+        raise NotImplementedError()
+
 class SizelessConnectableServer(SizelessServer):
     def __init__(self, utup, cpus, roots, credentials):
         super(SizelessConnectableServer, self).__init__(utup, cpus, roots)
