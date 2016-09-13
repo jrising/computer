@@ -1,4 +1,3 @@
 paramiko
-getpass
 mock
 install_requires
