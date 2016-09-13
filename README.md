@@ -1,4 +1,3 @@
-[Computer Docs on RTD](http://cli-computer.readthedocs.io/en/latest/index.html)
 
 ## Paths
 
@@ -25,3 +24,4 @@ take three forms:
 * `LoginServer` (`ParamikoServer`): A server using a Paramiko ssh connection, with a normal password login.
 
 
+[More Documentation can be found here](http://cli-computer.readthedocs.io/en/latest/index.html)
