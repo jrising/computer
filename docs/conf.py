@@ -20,21 +20,23 @@ import sphinx_rtd_theme
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('../'))
+#sys.path.insert(0, os.path.abspath('../'))
+sys.path.append("../")
+sys.path.append(".")
 
 #using this to mock modules for Read the Docs
-if sys.version_info < (3,):
-    from mock import Mock as MagicMock
-else:
-    from unittest.mock import MagicMock # added to unittest in python 3.3
+# if sys.version_info < (3,):
+#     from mock import Mock as MagicMock
+# else:
+#     from unittest.mock import MagicMock # added to unittest in python 3.3
 
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-            return Mock()
+# class Mock(MagicMock):
+#     @classmethod
+#     def __getattr__(cls, name):
+#             return Mock()
 
-MOCK_MODULES = ['paramiko', 'getpass', 'time']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+# MOCK_MODULES = ['paramiko', 'getpass', 'time']
+# sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # -- General configuration ------------------------------------------------
 
@@ -48,7 +50,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
-    # 'sphinxcontrib.mockautodoc', 
+    'mockautodoc', 
 ]
 
 # Add any paths that contain templates here, relative to this directory.
