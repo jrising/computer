@@ -1,3 +1,5 @@
+[Computer Docs on RTD](http://cli-computer.readthedocs.io/en/latest/index.html)
+
 ## Paths
 
 Servers have collections of `roots`, used to abstract away the
@@ -21,3 +23,5 @@ take three forms:
 
 * `LocalServer` (`SizelessServer`): A server representing the local machine, using python commands.
 * `LoginServer` (`ParamikoServer`): A server using a Paramiko ssh connection, with a normal password login.
+
+
