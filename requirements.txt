@@ -1,4 +1,2 @@
-install_requires = [
-  'paramiko',
-  'mock'
-]
+paramiko
+mock
