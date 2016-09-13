@@ -27,7 +27,10 @@ answer the question: 'Why should I use this tool?'
 .. toctree::
    :maxdepth: 2
 
+   user/description
    user/install
+
+
 
 
 The API Documentation / Guide
