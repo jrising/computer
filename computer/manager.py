@@ -39,7 +39,7 @@ class Manager(object):
         self.callbacks[process] = callback
         
     def process_check(self):
-        for server, processes in self.server_check()
+        for server, processes in self.server_check():
             for process in processes:
                 if not process.is_running():
                     self.callbacks[process](server, process.logfile)
