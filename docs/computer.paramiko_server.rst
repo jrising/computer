@@ -6,4 +6,4 @@ computer.paramiko_server module
     :undoc-members:
     :show-inheritance:
     :mockimport: paramiko
-    :mocktype: util
+
