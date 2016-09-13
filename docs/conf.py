@@ -22,6 +22,20 @@ import sphinx_rtd_theme
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('../'))
 
+#using this to mock modules for Read the Docs
+if sys.version_info < (3,):
+    from mock import Mock as MagicMock
+else:
+    from unittest.mock import MagicMock # added to unittest in python 3.3
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+            return Mock()
+
+MOCK_MODULES = ['paramiko', 'getpass', 'time']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
