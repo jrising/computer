@@ -1,5 +1,6 @@
 from setuptools import setup
 import os
+import sys
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
