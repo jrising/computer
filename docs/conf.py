@@ -25,18 +25,18 @@ sys.path.append("../")
 sys.path.append(".")
 
 #using this to mock modules for Read the Docs
-# if sys.version_info < (3,):
-#     from mock import Mock as MagicMock
-# else:
-#     from unittest.mock import MagicMock # added to unittest in python 3.3
+if sys.version_info < (3,):
+    from mock import Mock as MagicMock
+else:
+    from unittest.mock import MagicMock # added to unittest in python 3.3
 
-# class Mock(MagicMock):
-#     @classmethod
-#     def __getattr__(cls, name):
-#             return Mock()
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+            return Mock()
 
-# MOCK_MODULES = ['paramiko', 'getpass', 'time']
-# sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+MOCK_MODULES = ['paramiko', 'getpass', 'time']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # -- General configuration ------------------------------------------------
 
