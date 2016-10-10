@@ -1,4 +1,4 @@
-import paramiko, os
+import paramiko, os, time
 from paramiko_server import ParamikoServer
 from process import SingleCPUProcess
 
@@ -129,7 +129,10 @@ class OSDCServer(ParamikoServer):
             return False
         while True:
             stdout, stderr = self.run_command("hostname")
-            if stdout != "Griffin":
+            print stdout
+            print(stdout =="conflicts")
+            print('ssh -A ubuntu@' + self.credentials['instanceip'])
+            if stdout != "conflicts":
                 self.run_command('ssh -A ubuntu@' + self.credentials['instanceip'])
                 time.sleep(0.2)
             else:
