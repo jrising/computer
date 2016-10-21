@@ -23,117 +23,62 @@ class OSDCServer(ParamikoServer):
         super(OSDCServer, self).__init__(utup, cpus, roots, credentials)
 
     def connect(self):
-        os.system("ssh-agent -s")
-        sshAgentList = os.popen("find /tmp/ -type s -name agent.* 2>/dev/null | grep '/tmp/ssh-.*/agent.*'").read().split("\n")[:-1]
+        # Logging into the OSDC server requires adding ssh identity to ssh-agent first.
+        # If there's an existing agent, just find its name and use it, instead of creating a new one.
+        # Only create a new one when all the existing ssh-agent failed.
+        # "Using" a ssh-agent means setting the shell variable SSH_AUTH_SOCK to its tmp file.
         retCode = 1
+        try_count = 0
         while retCode != 0:
-            os.environ['SSH_AUTH_SOCK'] = sshAgentList[0]
-            retCode = os.system("ssh-add /home/jongkai/.ssh/jongkaishackleton.pem")
+            sshAgentList = os.popen("find /tmp/ -type s -name agent.* 2>/dev/null | grep '/tmp/ssh-.*/agent.*'").read().split("\n")[:-1]
+            for i in len(sshAgentList):
+                os.environ['SSH_AUTH_SOCK'] = sshAgentList[i]
+                retCode = os.system("ssh-add /var/www/jongkaishackleton-www.pem")
+                if retCode == 0:
+                    break
+            if retCode != 0:
+                os.system("ssh-agent -s")
+            if try_count > 99:
+                raise SystemExit("Cannot add ssh identity!")
+            try_count += 1
 
-        #     os.system("ssh-agent -s")
-        #     sshAgentList = os.popen("find /tmp/ -type s -name agent.* 2>/dev/null | grep '/tmp/ssh-.*/agent.*'").read().split("\n")[:-1]
-        #     os.environ['SSH_AUTH_SOCK'] = sshAgentList[0]
-        #     retCode = os.system("ssh-add /home/jongkai/.ssh/jongkaishackleton.pem")
-
-                
-
-        # while True:
-        #     os.system("ssh-agent -s")
-        #     sshAgentList = os.popen("find /tmp/ -type s -name agent.* 2>/dev/null | grep '/tmp/ssh-.*/agent.*'").read().split("\n")[:-1]
-        #     os.environ['SSH_AUTH_SOCK'] = sshAgentList[0]
-        #     retCode = os.system("ssh-add /home/jongkai/.ssh/jongkaishackleton.pem")
-        #     if retCode == 0:
-        #         for i in range(1, len(sshAgentList)):
-        #             agentPID = int(sshAgentList[i].split(".")[1])+1
-        #             os.system("kill " + str(agentPID))
-        #         break
-        #     else:
-        #         agentPID = int(sshAgentList[0].split(".")[1])+1
-        #         # TODO: add sleep
-        #         os.system("kill " + str(agentPID))
-
-        # client = paramiko.SSHClient()
-        # #proxy = paramiko.ProxyCommand('ssh -A ubuntu@' + self.credentials['instanceip'])
-        # proxy = paramiko.ProxyCommand("ssh -o StrictHostKeyChecking=no griffin.opensciencedatacloud.org nc 172.17.199.2 22")
-        # client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        # print('yo')
-        # client.connect(self.credentials['loginnode'], username=self.credentials['username'], sock=proxy)
-        # paramiko.util.log_to_file("filename.log")
-        # print("haa")
-        # s = client.get_transport().open_session()
-        # paramiko.agent.AgentRequestHandler(s)
-        # s.get_pty()
-        # s.invoke_shell()
-
-
-        # client = paramiko.SSHClient()
-        # client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        # client.connect(self.credentials['loginnode'], username=self.credentials['username'])
-        # s = client.get_transport().open_session()
-        # paramiko.agent.AgentRequestHandler(s)
-        # s.get_pty()
-        # s.invoke_shell()
-        # proxy = paramiko.ProxyCommand("ssh -o ForwardAgent griffin.opensciencedatacloud.org nc 172.17.199.2 22")
-        # client2 = paramiko.SSHClient()
-        # client2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        # print('yo')
-        # client2.connect(self.credentials['loginnode'], username=self.credentials['username'], sock=proxy)
-        # print("haa")
-        # s2 = client.get_transport().open_session()
-        # paramiko.agent.AgentRequestHandler(s)
-        # s2.get_pty()
-        # s2.invoke_shell()
-        # pring("GO")
-        # self.client = client2
-        # self.session = s2
-        # self.connected = True
-
-        # stdout, stderr = self.run_command('date "+%H:%M:%S   %d/%m/%y" >> arrived')
-        
-        # self.receive_all()
-
+        # Other setups are similar to using paramiko to login to shackleton.
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        # ssh -A jrising@griffin.opensciencedatacloud.org
         client.connect(self.credentials['loginnode'], username=self.credentials['username'])
-
-        # Open up a session
         s = client.get_transport().open_session()
         paramiko.agent.AgentRequestHandler(s)
-
         s.get_pty()
         s.invoke_shell()
-
         self.client = client
         self.session = s
 
-        # ssh -A ubuntu@172.17.199.2
-        print(s)
+        # Except for having to manually login into computation node.
         stdout, stderr = self.run_command('ssh -A ubuntu@' + self.credentials['instanceip'])
-        print(self, s)
         stdout, stderr = self.run_command('date "+%H:%M:%S   %d/%m/%y" >> arrived')
 
         self.connected = True
 
-        # while True:
-        #     stdout, stderr = self.run_command("hostname")
-        #     if stdout != "Griffin":
-        #         self.run_command('ssh -A ubuntu@' + self.credentials['instanceip'])
-        #     else:
-        #         stdout, stderr = self.run_command('date "+%H:%M:%S   %d/%m/%y" >> arrived')
-        #         return True
-
-
     def check_connection(self):
+        # This method checks both the connection to login node and the computation node.
+        # If connection to computation node is dropped, retry.
+        # But not worry about reconnection to login node, which would be handle by the caller.
+        # This design is for the consistency of caller's behavior.
         if not self.connected:
             return False
         while True:
+            # Log the arrive time for manual checking, if this time info appears in login node,
+            # then I know the connection to computation node had dropped;
+            # if this info appears in shackleton, then I know that not only the connection to login node had dropped, 
+            # but also the self.connected is not performing as expected.
+            self.run_command('date "+%H:%M:%S   %d/%m/%y" >> arrived')
+
+            # If hostname is shackleton, then the connection to login node is dropped, should reconnect.
             stdout, stderr = self.run_command("hostname")
-            print stdout
-            print(stdout =="conflicts")
-            print('ssh -A ubuntu@' + self.credentials['instanceip'])
-            if stdout != "conflicts":
+            if stdout == "shackleton":
+                return False
+            elif stdout == "conflicts":
+                return True
+            else:
                 self.run_command('ssh -A ubuntu@' + self.credentials['instanceip'])
                 time.sleep(0.2)
-            else:
-                return True
