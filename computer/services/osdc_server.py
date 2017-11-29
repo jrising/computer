@@ -1,7 +1,8 @@
 import paramiko, os, time
-from ..paramiko_server import ParamikoServer
-from ..process import SingleCPUProcess
+from paramiko_server import ParamikoServer
+from process import SingleCPUProcess
 
+known_localhosts = ['sacagawea', 'shackleton']
 
 class OSDCProcess(SingleCPUProcess):
     def __init__(self, pid, logfile):
@@ -45,7 +46,7 @@ class OSDCServer(ParamikoServer):
         if stdout == self.credentials['instanceName']:
             self.connected = True
             return "success"
-        elif stdout == "shackleton":
+        elif stdout in known_localhosts:
             retCode = 1
             try_count = 0
             try:
@@ -79,7 +80,7 @@ class OSDCServer(ParamikoServer):
 
         # Error catching if something weird happens, the hostname should never be anything else than this 3.
         elif stdout != self.credentials['loginNode']:
-            raise paramiko.ssh_exception.AuthenticationException("This should never happen!")
+            raise paramiko.ssh_exception.AuthenticationException("Unknown local server!")
 
         # Second stage, unreliably login into computation node with run_command. 
         # If the connection from loginNode to computation is dropped, the Hostname should be the loginNode, 
@@ -116,7 +117,7 @@ if __name__ == '__main__':
     import sys
     from interact.main import handle
 
-    # credentials = dict(domain=sys.argv[1], userName=sys.argv[2], password=sys.argv[3])
-    # server = LoginServer((), 1, {}, credentials)
-    # server.connect()
-    # handle(server, sys.argv[4:])
+    credentials = dict(loginNode=sys.argv[1], instanceName=sys.argv[2], instanceIP=sys.argv[3], userName=sys.argv[4], pem=sys.argv[5])
+    server = OSDCServer((), 1, {}, credentials)
+    server.connect()
+    handle(server, sys.argv[6:])
