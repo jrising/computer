@@ -70,11 +70,13 @@ class OSDCServer(ParamikoServer):
             client.connect(self.credentials['loginNode'], username=self.credentials['userName'])
             s = client.get_transport().open_session()
             paramiko.agent.AgentRequestHandler(s)
+
             s.get_pty()
             s.invoke_shell()
+
             self.client = client
             self.session = s
-        
+
         # Error catching if something weird happens, the hostname should never be anything else than this 3.
         elif stdout != self.credentials['loginNode']:
             raise paramiko.ssh_exception.AuthenticationException("This should never happen!")

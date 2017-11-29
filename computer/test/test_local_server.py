@@ -21,10 +21,10 @@ def test_proc():
     lines = server.run_command('ls -1', 'cc')[0]
     assert('local_server.py' in lines.split('\n'))
 
-    proc = server.start_process('ls -1', 'cc/log.txt', 'cc')
+    proc = server.start_process('ls -1', 'cc')
     while proc.is_running():
         time.sleep(.1)
 
-    lines = server.read_file('cc/log.txt')
+    lines = server.read_file(proc.logfile)
     assert('local_server.py' in lines.split('\n'))
     proc.close()

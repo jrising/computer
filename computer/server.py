@@ -86,6 +86,10 @@ class SizelessServer(DiskServer):
         "Returns (output, error) as strings."
         raise NotImplementedError()
 
+    def cwd(self, path):
+        "Changes current directory on server."
+        raise NotImplementedError()
+
 class SizelessConnectableServer(SizelessServer):
     def __init__(self, utup, cpus, roots, credentials):
         super(SizelessConnectableServer, self).__init__(utup, cpus, roots)

@@ -4,7 +4,7 @@ from process import SingleCPUProcess
 
 class LocalProcess(SingleCPUProcess):
     def __init__(self, server, proc, stdout, logfile):
-        super(LocalProcess, self).__init__(server, logfile)
+        super(LocalProcess, self).__init__(server, proc.pid, logfile)
         self.proc = proc
         self.stdout = stdout
 
@@ -32,6 +32,9 @@ class LocalServer(SizelessServer):
     def __init__(self, utup, cpus, roots):
         super(LocalServer, self).__init__(utup, cpus, roots)
 
+    def check_connection(self):
+        return True
+        
     def list_disk(self, path=None):
         if path is not None:
             os.chdir(self.fullpath(path))
@@ -48,9 +51,13 @@ class LocalServer(SizelessServer):
         with open(self.fullpath(path), 'r') as fp:
             return fp.read()
 
-    def start_process(self, command, logfile, path=None):
+    def start_process(self, command, path=None):
+        logfile, stderr = self.run_command("mktemp")
         fp = open(self.fullpath(logfile), 'w')
-        proc = subprocess.Popen(shlex.split(command), cwd=self.fullpath(path), stdout=fp)
+        if path is None:
+            proc = subprocess.Popen(shlex.split(command), stdout=fp)
+        else:
+            proc = subprocess.Popen(shlex.split(command), cwd=self.fullpath(path), stdout=fp)
         return LocalProcess(self, proc, fp, logfile)
 
     def run_command(self, command, path=None):
@@ -58,3 +65,5 @@ class LocalServer(SizelessServer):
             os.chdir(self.fullpath(path))
         return (os.popen(command).read(), "")
 
+    def cwd(self, path):
+        os.chdir(path)

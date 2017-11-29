@@ -1,9 +1,8 @@
 import os, re
-from process import RemoteProcess
+from process import SingleCPUProcess
 from server import SizelessConnectableServer
 
-
-class RemoteLinuxProcess(RemoteProcess):
+class RemoteLinuxProcess(SingleCPUProcess):
     def __init__(self, server, pid, logfile):
         super(RemoteLinuxProcess, self).__init__(server, pid, logfile)
 
