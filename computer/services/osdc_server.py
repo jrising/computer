@@ -1,6 +1,6 @@
 import paramiko, os, time
-from paramiko_server import ParamikoServer
-from process import SingleCPUProcess
+from ..paramiko_server import ParamikoServer
+from ..process import SingleCPUProcess
 
 
 class OSDCProcess(SingleCPUProcess):
@@ -111,3 +111,12 @@ class OSDCServer(ParamikoServer):
             else:
                 self.connected = False
                 return False
+
+if __name__ == '__main__':
+    import sys
+    from interact.main import handle
+
+    # credentials = dict(domain=sys.argv[1], userName=sys.argv[2], password=sys.argv[3])
+    # server = LoginServer((), 1, {}, credentials)
+    # server.connect()
+    # handle(server, sys.argv[4:])
