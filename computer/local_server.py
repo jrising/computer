@@ -67,3 +67,15 @@ class LocalServer(SizelessServer):
 
     def cwd(self, path):
         os.chdir(path)
+
+    def run_interactive(self, command, path=None):
+        if path is not None:
+            os.chdir(self.fullpath(path))
+        proc = subprocess.Popen(shlex.split(command), cwd=self.fullpath(path), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=1)
+        return proc.stdin, proc.stdout, proc.stderr
+
+if __name__ == '__main__':
+    from interact.main import handle
+
+    server = LocalServer((), 1, {})
+    handle(server)

@@ -47,3 +47,12 @@ class LoginServer(ParamikoServer):
             post_busy = post_sum - int(post_time[i].split()[4]) - int(post_time[i].split()[5])
             ret.append((prev_time[i].split()[0], float(post_busy - prev_busy)/(post_sum - prev_sum)*100))
         return ret
+
+if __name__ == '__main__':
+    import sys
+    from interact.main import handle
+
+    credentials = dict(domain=sys.argv[1], userName=sys.argv[2], password=sys.argv[3])
+    server = LoginServer((), 1, {}, credentials)
+    server.connect()
+    handle(server, sys.argv[4:])

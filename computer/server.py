@@ -86,6 +86,10 @@ class SizelessServer(DiskServer):
         "Returns (output, error) as strings."
         raise NotImplementedError()
 
+    def run_interactive(self, command, path=None):
+        "Runs an interactive command and returns streams (stdin, stdout, stderr) to interact with it."
+        raise NotImplementedError()
+
     def cwd(self, path):
         "Changes current directory on server."
         raise NotImplementedError()
