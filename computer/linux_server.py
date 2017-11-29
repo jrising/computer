@@ -2,9 +2,14 @@ import os, re
 from process import RemoteProcess
 from server import SizelessConnectableServer
 
+
 class RemoteLinuxProcess(RemoteProcess):
     def __init__(self, server, pid, logfile):
         super(RemoteLinuxProcess, self).__init__(server, pid, logfile)
+
+    def __str__(self):
+        return self.server.utup[0] + ',' + self.server.utup[1] + ',' + str(self.pid) + ',' + self.logfile
+        # JK_Note: Use for db representation in django server.
 
     def is_running(self):
         "Returns bool."
