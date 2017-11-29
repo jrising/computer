@@ -34,12 +34,12 @@ class Manager(object):
             self.waiting.put((root, path, command, dependencies, callback))
             return
         
-        process = server.start_process(root, path, command)
+        process = server.start_process(command, path)
         self.processes[server].add(process)
         self.callbacks[process] = callback
         
     def process_check(self):
-        for server, processes in self.server_check()
+        for server, processes in self.server_check():
             for process in processes:
                 if not process.is_running():
                     self.callbacks[process](server, process.logfile)

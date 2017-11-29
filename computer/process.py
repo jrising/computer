@@ -1,7 +1,8 @@
 class SingleCPUProcess(object):
-    def __init__(self, server, logfile=None):
+    def __init__(self, server, pid, logfile=None):
         self.server = server
         self.logfile = logfile
+        self.pid = pid
 
     def is_running(self):
         "Returns bool."
@@ -23,9 +24,3 @@ class SingleCPUProcess(object):
         Remove the log file
         """
         raise NotImplemented()
-
-class RemoteProcess(SingleCPUProcess):
-    def __init__(self, server, pid, logfile):
-        super(RemoteProcess, self).__init__(server, logfile)
-        self.pid = pid
-

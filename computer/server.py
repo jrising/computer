@@ -90,6 +90,10 @@ class SizelessServer(DiskServer):
         "Runs an interactive command and returns streams (stdin, stdout, stderr) to interact with it."
         raise NotImplementedError()
 
+    def cwd(self, path):
+        "Changes current directory on server."
+        raise NotImplementedError()
+
 class SizelessConnectableServer(SizelessServer):
     def __init__(self, utup, cpus, roots, credentials):
         super(SizelessConnectableServer, self).__init__(utup, cpus, roots)
