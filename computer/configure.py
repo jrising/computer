@@ -7,22 +7,31 @@ class UserException(Exception):
     pass
 
 def config_or_prompt_several(mapping, config, prompter, callback):
-    for key in mapping:
-        config_or_prompt(key, mapping[key], config, prompter, ...)
-        ## TODO: Think through this.  If fail, want to go through
-        ## entire list again.
-        
-        return callback(config)
-        
+    config_or_prompt_remaining(copy.copy(mapping), mapping, copy.copy(config), config, prompter, callback)
+
+def config_or_prompt_remaining(mapping, mapping_remaining, original_config, config, prompter, callback):
+    key = mapping.next()
+    if len(mapping) == 1:
+        def getnext(config):
+            try:
+                callback(config)
+            except:
+                config_or_prompt_several(mapping, original_config, prompter, callback)
+    else:
+        newmapping = copy.copy(mapping)
+        del newmapping[key]
+        def getnext(config):
+            config_or_prompt_remaining(mapping, newmapping, original_config, config, prompter, callback)
+            
+    return config_or_prompt(key, mapping[key], config, prompter, getnext)
+
 def config_or_prompt(key, prompt, config, prompter, callback):
+    """Get config value from either the config dict or a prompt; repeating as necessary until callback succeeds."""
     try:
         if key in config:
             return callback(config)
-    except UserException as ex:
-        print ex
     except ex:
-        print "Unknown error.  Please try again."
-    finally:
+        print ex
         config[key] = prompter(prompt)
         return config_or_prompt(key, prompt, config, prompter)
 

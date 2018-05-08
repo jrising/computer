@@ -1,3 +1,0 @@
-import sys, yaml
-
-config = yaml.load(sys.argv[1])
