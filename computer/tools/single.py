@@ -1,10 +1,11 @@
 import sys, yaml
 import configure
 
-config = yaml.load(sys.argv[1])
-server = configure.initialize_server(config, prompter)
+with open(sys.argv[1], 'r') as fp:
+    config = yaml.load(fp)
+server = configure.initialize_server(config, raw_input)
 
-command = ' '.join(argv[1:])
+command = ' '.join(sys.argv[2:])
 output, error = server.run_command(command)
 
 if error:

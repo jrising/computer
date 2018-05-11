@@ -1,0 +1,6 @@
+type: local
+utup: Example
+cpus: 1
+roots:
+  home: ~/
+  
