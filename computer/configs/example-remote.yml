@@ -1,0 +1,6 @@
+type: login
+utup: Example
+cpus: 1
+roots:
+  home: ~/
+  
