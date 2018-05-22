@@ -11,7 +11,7 @@ class LoginServer(ParamikoServer):
     def connect(self):
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(self.credentials['domain'], username=self.credentials['userName'], password=self.credentials['password'])
+        client.connect(self.credentials['domain'], username=self.credentials['username'], password=self.credentials['password'])
 
         # Open up a session
         s = client.get_transport().open_session()
